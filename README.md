@@ -42,7 +42,7 @@
 - [🔧 运维指南](#-运维指南)
 - [📞 联系方式](#-联系方式)
 
-> 🤖 **从零开始？** 复制 [安装助手提示词](SETUP_PROMPT.md) 到任何 AI 助手，一步一步指导你完成安装
+> 🤖 **从零开始？** 复制 [安装提示词](#-ai-一键安装推荐) 到 AI 助手，自动生成安装脚本
 
 ---
 
@@ -451,6 +451,100 @@ K线维度:
 
 ## 🚀 快速开始
 
+### 🤖 AI 一键安装（推荐）
+
+> 把下面的提示词复制到 **Claude / ChatGPT**，AI 会生成完整安装脚本，执行一次即可完成安装
+
+<details>
+<summary><strong>📋 点击展开安装提示词</strong></summary>
+
+```
+生成一个 TradeCat 全自动安装脚本，要求：
+
+1. 系统: Ubuntu 22.04/24.04
+2. 安装: TimescaleDB 2.x + TA-Lib + Python 3.10+
+3. 项目: github.com/tukuaiai/tradecat
+4. 数据库: postgres/postgres@localhost:5432/market_data
+
+脚本要求：
+- 一个 bash 脚本，复制执行即可
+- 自动检测已安装的组件，跳过
+- 每步有清晰的进度提示
+- 最后输出验证结果
+- 出错时显示具体原因
+
+脚本结构：
+1. 检查系统
+2. 安装系统依赖
+3. 安装 TimescaleDB
+4. 创建数据库
+5. 安装 TA-Lib
+6. 克隆项目到 ~/.projects/tradecat
+7. 运行 ./scripts/init.sh
+8. 验证安装
+
+直接输出完整脚本，不要解释。
+```
+
+</details>
+
+AI 生成脚本后执行：
+
+```bash
+chmod +x install_tradecat.sh && ./install_tradecat.sh
+```
+
+### 🪟 Windows WSL2 用户
+
+先在 Windows 用户目录创建 `.wslconfig`：
+
+```powershell
+notepad "$env:USERPROFILE\.wslconfig"
+```
+
+写入：
+
+```ini
+[wsl2]
+memory=10GB
+processors=6
+swap=12GB
+networkingMode=mirrored
+```
+
+重启 WSL：`wsl --shutdown`，然后使用上面的 AI 安装提示词。
+
+### ⚙️ 配置 Bot Token（必须）
+
+```bash
+vim ~/.projects/tradecat/services/telegram-service/config/.env
+```
+
+```ini
+TELEGRAM_BOT_TOKEN=你的Token
+# 如需代理
+HTTPS_PROXY=http://127.0.0.1:7890
+```
+
+### 🎬 启动服务
+
+```bash
+cd ~/.projects/tradecat
+./scripts/start.sh daemon    # 启动
+./scripts/start.sh status    # 查看状态
+```
+
+### ✅ 验证安装
+
+```bash
+./scripts/verify.sh
+```
+
+---
+
+<details>
+<summary><strong>📖 手动安装步骤（点击展开）</strong></summary>
+
 ### 环境要求
 
 | 依赖 | 版本 | 说明 |
@@ -497,10 +591,7 @@ cd .. && rm -rf ta-lib ta-lib-0.4.0-src.tar.gz
 
 ```bash
 # 编辑各服务配置（init.sh 已自动从 .env.example 复制）
-# 编辑全局配置（所有服务共用）
 vim config/.env
-
-
 ```
 
 #### 5. 启动服务
@@ -521,6 +612,8 @@ vim config/.env
 ```bash
 ./scripts/verify.sh
 ```
+
+</details>
 
 ---
 
