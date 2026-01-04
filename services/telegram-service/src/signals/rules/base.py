@@ -1,9 +1,12 @@
 """
 信号规则基础定义
 """
+import logging
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Callable, Any
+
+logger = logging.getLogger(__name__)
 
 
 class ConditionType(Enum):
@@ -137,7 +140,8 @@ class SignalRule:
                 return False
 
             return False
-        except Exception:
+        except Exception as e:
+            logger.warning(f"规则检查异常 {self.name}: {e}")
             return False
 
     def format_message(self, prev: Optional[Dict], curr: Dict) -> str:
@@ -150,5 +154,6 @@ class SignalRule:
                 else:
                     fmt_args[arg_name] = curr.get(field_name, 0) or 0
             return self.message_template.format(**fmt_args)
-        except Exception:
+        except Exception as e:
+            logger.warning(f"消息格式化异常 {self.name}: {e}")
             return self.message_template
